@@ -1,0 +1,14 @@
+# Netlify build configuration for Next.js (Q-BOX)
+# Netlify auto-detects Next.js and uses the OpenNext adapter – these are optional overrides.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Use Node 20 (LTS) for the build
+[build.environment]
+  NODE_VERSION = "20"
+
+# Optional: reduce build logs noise
+# [build.environment]
+#  NPM_FLAGS = "--legacy-peer-deps"
