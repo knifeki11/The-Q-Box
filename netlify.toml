@@ -8,6 +8,8 @@
 # Use Node 20 (LTS) for the build
 [build.environment]
   NODE_VERSION = "20"
+  # Allow NEXT_PUBLIC_* vars in build output (they are client-safe by design)
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_VAPID_PUBLIC_KEY"
 
 # Optional: reduce build logs noise
 # [build.environment]
