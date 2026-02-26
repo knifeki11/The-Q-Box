@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Settings, Clock, DollarSign, Bell, Palette, Save, Monitor } from "lucide-react";
+import { PushNotificationToggle } from "@/components/push-notification-toggle";
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 
@@ -476,6 +477,7 @@ export default function SettingsPage() {
         </SettingGroup>
 
         <SettingGroup title={t.notifications[lang]} icon={Bell}>
+          <PushNotificationToggle />
           <SettingRow label={t.sessionAlerts[lang]} description={t.sessionAlertsDesc[lang]}>
             <Toggle
               checked={data.notifications.session_alerts}

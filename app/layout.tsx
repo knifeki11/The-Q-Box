@@ -4,6 +4,8 @@ import { Playfair_Display } from "next/font/google";
 
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { InstallPromptDrawer } from "@/components/install-prompt-drawer";
+import { SerwistProvider } from "./serwist";
 
 const retroGaming = localFont({
   src: "../public/images/secondary-font/Retro Gaming.ttf",
@@ -22,6 +24,9 @@ export const metadata: Metadata = {
   description:
     "The future of gaming. Premium PS5 stations, competitive play, and the ultimate gaming experience at Q-BOX Play Lounge.",
   generator: "v0.app",
+  icons: {
+    icon: "/images/QBOX_logo_upscaled.png",
+  },
 };
 
 export const viewport: Viewport = {
@@ -38,8 +43,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${retroGaming.variable} ${armyFont.variable} font-sans antialiased`} suppressHydrationWarning>
-        {children}
-        <Toaster />
+        <SerwistProvider swUrl="/serwist/sw.js">
+          {children}
+          <Toaster />
+          <InstallPromptDrawer />
+        </SerwistProvider>
       </body>
     </html>
   );

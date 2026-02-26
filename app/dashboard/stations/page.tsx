@@ -7,6 +7,7 @@ import {
   Play,
   Square,
   Pause,
+  Loader2,
   CalendarClock,
   Wrench,
   Clock,
@@ -1028,19 +1029,20 @@ function StationCard({
 
   const [elapsed, setElapsed] = useState<string>("0:00");
   const isPaused = !!(session?.paused_at);
+  const hasValidStartedAt = session?.started_at && !isNaN(new Date(session.started_at).getTime());
   useEffect(() => {
-    if (station.status !== "occupied" || !session?.started_at) return;
+    if (station.status !== "occupied" || !session || !hasValidStartedAt) return;
     const started = new Date(session.started_at).getTime();
     if (session.paused_at) {
       const pausedAt = new Date(session.paused_at).getTime();
-      setElapsed(formatElapsedMs(pausedAt - started));
+      setElapsed(formatElapsedMs(Math.max(0, pausedAt - started)));
       return;
     }
-    const tick = () => setElapsed(formatElapsedMs(Date.now() - started));
+    const tick = () => setElapsed(formatElapsedMs(Math.max(0, Date.now() - started)));
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [station.status, session?.started_at, session?.paused_at]);
+  }, [station.status, session?.started_at, session?.paused_at, hasValidStartedAt]);
 
   return (
     <motion.div
@@ -1069,24 +1071,24 @@ function StationCard({
         </p>
 
         <div className="mt-4 flex flex-col gap-2">
-          {session && (
+          {station.status === "occupied" && (
             <>
               <div className="flex items-center gap-2">
                 <User size={12} className="shrink-0 text-muted-foreground" />
                 <span className="text-sm font-medium text-foreground">
-                  {session.player_name?.trim() && session.player_name !== "—"
+                  {session?.player_name?.trim() && session.player_name !== "—"
                     ? session.player_name
                     : "Walk-in"}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-xs font-medium text-foreground">
                 <Clock size={12} />
-                <span>{elapsed}</span>
+                <span>{session ? elapsed : "—"}</span>
                 {isPaused && (
                   <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-amber-400">{cardPausedT[lang]}</span>
                 )}
               </div>
-              {session.game && (
+              {session?.game && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Monitor size={12} />
                   <span>{session.game}</span>
@@ -1180,7 +1182,11 @@ export default function StationsPage() {
       }
     }
     fetchStations();
-    return () => { cancelled = true; };
+    const interval = setInterval(() => refetchStations(), 15_000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {

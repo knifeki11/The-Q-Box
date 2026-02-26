@@ -3,6 +3,34 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params();
+    if (!id) {
+      return NextResponse.json({ error: "Tournament ID is required" }, { status: 400 });
+    }
+    const supabase = createAdminClient();
+    const { error } = await supabase
+      .from("tournaments")
+      .delete()
+      .eq("id", id);
+    if (error) {
+      console.error("[tournaments] DELETE error:", error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    console.error("[tournaments] DELETE Error:", e);
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Failed to delete tournament" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Trophy, Plus, Users, DollarSign, Calendar, Clock, Filter, MoreVertical, Pencil } from "lucide-react";
+import { Trophy, Plus, Users, DollarSign, Calendar, Clock, Filter, MoreVertical, Pencil, Trash2, Play } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -93,6 +93,7 @@ export default function TournamentsPage() {
   const [editingTournament, setEditingTournament] = useState<Tournament | null>(null);
   const [form, setForm] = useState(defaultForm);
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchTournaments = useCallback(async () => {
     setLoading(true);
@@ -131,6 +132,28 @@ export default function TournamentsPage() {
       starts_at: iso,
     });
     setCreateOpen(true);
+  };
+
+  const handleDelete = async (t: Tournament) => {
+    if (!confirm(`Delete "${t.name}"? This cannot be undone.`)) return;
+    setDeletingId(t.id);
+    try {
+      const res = await fetch(`/api/dashboard/tournaments/${t.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || "Failed to delete");
+      }
+      toast.success("Tournament deleted");
+      await fetchTournaments();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const openBracket = (t: Tournament) => {
+    window.open(`/tournaments/${t.id}`, "_blank", "noopener,noreferrer");
   };
 
   const openEdit = (t: Tournament) => {
@@ -329,6 +352,18 @@ export default function TournamentsPage() {
                       <DropdownMenuItem onClick={() => openEdit(t)}>
                         <Pencil size={14} className="mr-2" />
                         Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => openBracket(t)}>
+                        <Play size={14} className="mr-2" />
+                        Start
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleDelete(t)}
+                        disabled={deletingId === t.id}
+                        className="text-red-400 focus:text-red-400"
+                      >
+                        <Trash2 size={14} className="mr-2" />
+                        Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

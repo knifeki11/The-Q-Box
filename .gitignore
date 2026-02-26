@@ -3,6 +3,10 @@ __v0_runtime_loader.js
 __v0_devtools.tsx
 __v0_jsx-dev-runtime.ts
 
+# Serwist / PWA
+public/sw*
+public/swe-worker*
+
 # Common ignores
 node_modules/
 .next/

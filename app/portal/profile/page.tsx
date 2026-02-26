@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { usePortalMe } from "@/app/portal/portal-me-context";
 import { createClient } from "@/lib/supabase/client";
+import { PushNotificationToggle } from "@/components/push-notification-toggle";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -283,6 +284,7 @@ export default function ProfilePage() {
             Notifications
           </h3>
           <div className="flex flex-col gap-4">
+            <PushNotificationToggle />
             {[
               {
                 key: "bookingReminders",
