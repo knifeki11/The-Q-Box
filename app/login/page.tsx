@@ -148,7 +148,7 @@ function LoginForm() {
                 />
                 <input
                   type="text"
-                  inputMode="tel"
+                  inputMode="text"
                   autoComplete="tel email"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}

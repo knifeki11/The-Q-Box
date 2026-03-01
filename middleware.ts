@@ -29,6 +29,13 @@ export async function middleware(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isDashboard = path.startsWith("/dashboard");
+  const isPortal = path.startsWith("/portal");
+
+  if (isPortal && !user) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirect", path);
+    return NextResponse.redirect(loginUrl);
+  }
 
   if (isDashboard) {
     if (!user) {
@@ -59,5 +66,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/portal/:path*"],
 };
